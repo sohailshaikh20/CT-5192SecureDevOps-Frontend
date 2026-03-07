@@ -1,4 +1,4 @@
-name: SonarCloud Analysis
+name: Frontend CI + SonarCloud
 
 on:
   push:
@@ -11,26 +11,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      # Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # Install frontend dependencies
       - name: Install dependencies
-        run: |
-          cd frontend-react
-          npm install
+        working-directory: frontend-react
+        run: npm install
 
-      - name: Run tests
-        run: |
-          cd frontend-react
-          npm test -- --coverage --watchAll=false || true
+      # Run tests (optional but recommended)
+      - name: Run frontend tests
+        working-directory: frontend-react
+        run: npm test -- --coverage --watchAll=false || true
 
+      # SonarCloud Scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.sources=frontend-react/src
