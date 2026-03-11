@@ -37,6 +37,11 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState<number | null>(null);
   const [enrollingCourse, setEnrollingCourse] = useState(false);
+  // --------------------------- ZAP TEST VULNERABILITY -------------------
+  // vulnerability: reflected Cross-Site Scripting (XSS)
+  // user input rendered without sanitization
+  const [zapInput, setZapInput] = useState("");
+  // -----------------------------------------------------------------------
 
   useEffect(() => {
     const initializeSession = async () => {
@@ -309,6 +314,26 @@ const App: React.FC = () => {
 
     return (
       <div className="container mx-auto p-4">
+        {/* --------------------- ZAP VULNERABILITY TEST ---------------- */}
+        <div className="p-4 mb-6 border border-red-400 rounded bg-red-50">
+          <h3 className="text-lg font-bold text-red-600">
+            Vulnerable Input Test (XSS)
+          </h3>
+        
+          <input
+            type="text"
+            placeholder="Type something..."
+            className="border p-2 mt-2 w-full"
+            onChange={(e) => setZapInput(e.target.value)}
+          />
+        
+          {/* intentionally vulnerable rendering */}
+          <div
+            className="mt-3"
+            dangerouslySetInnerHTML={{ __html: zapInput }}
+          ></div>
+        </div>
+        {/* ------------------------------------------------------------------------------ */}
         {user?.role === 'teacher' && <CreateCourse onCourseCreated={fetchCourses} />}
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Available Courses</h2>
