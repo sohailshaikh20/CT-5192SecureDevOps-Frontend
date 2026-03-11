@@ -10,8 +10,8 @@ import StudentGrades from './components/StudentDashboard';
 // vulnerability 1: hardcoded secret / API key
 // hardcoding secrets in frontend code is not secure because anyone can view it in their browser.
 const HARDCODED_API_KEY = "SECRET-API-KEY-12345";
+const ADMIN_PASSWORD = "admin123";
 // ----------------------------------------------------------------------
-
 interface User {
   id: number;
   username: string;
