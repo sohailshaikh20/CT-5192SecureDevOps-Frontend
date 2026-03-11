@@ -12,65 +12,66 @@ jobs:
 
     steps:
 
-    # -------------------------------
-    # Stage 1: Checkout Repository
-    # -------------------------------
-    - name: Checkout Source Code
-      uses: actions/checkout@v3
+      # -------------------------------
+      # Stage 1: Checkout Source Code
+      # -------------------------------
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    # -------------------------------
-    # Stage 2: Setup Node Environment
-    # -------------------------------
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-        cache: 'npm'
+      # -------------------------------
+      # Stage 2: Setup Node Environment
+      # -------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: frontend-react/package-lock.json
 
-    # -------------------------------
-    # Stage 3: Clean Workspace
-    # -------------------------------
-    - name: Clean Workspace
-      run: |
-        rm -rf node_modules
-        rm -rf coverage
+      # -------------------------------
+      # Stage 3: Clean Workspace
+      # -------------------------------
+      - name: Clean Workspace
+        run: |
+          rm -rf frontend-react/node_modules
+          rm -rf frontend-react/coverage
 
-    # -------------------------------
-    # Stage 4: Install Dependencies
-    # -------------------------------
-    - name: Install Frontend Dependencies
-      working-directory: frontend-react
-      run: npm install
+      # -------------------------------
+      # Stage 4: Install Dependencies
+      # -------------------------------
+      - name: Install Frontend Dependencies
+        working-directory: frontend-react
+        run: npm install
 
-    # -------------------------------
-    # Stage 5: Run Unit Tests
-    # -------------------------------
-    - name: Run Frontend Tests
-      working-directory: frontend-react
-      run: npm test -- --coverage --watchAll=false || true
+      # -------------------------------
+      # Stage 5: Run Unit Tests
+      # -------------------------------
+      - name: Run Frontend Tests
+        working-directory: frontend-react
+        run: npm test -- --coverage --watchAll=false || true
 
-    # -------------------------------
-    # Stage 6: Snyk Dependency Scan
-    # -------------------------------
-    - name: Run Snyk Security Scan
-      uses: snyk/actions/node@master
-      with:
-        command: test
-        args: --file=frontend-react/package.json
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      # -------------------------------
+      # Stage 6: Snyk Security Scan
+      # -------------------------------
+      - name: Run Snyk Security Scan
+        uses: snyk/actions/node@master
+        with:
+          command: test
+          args: --file=frontend-react/package.json
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-    # -------------------------------
-    # Stage 7: SonarCloud Static Analysis
-    # -------------------------------
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-          -Dsonar.sources=frontend-react/src
-          -Dsonar.javascript.lcov.reportPaths=frontend-react/coverage/lcov.info
+      # -------------------------------
+      # Stage 7: SonarCloud Static Analysis
+      # -------------------------------
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.sources=frontend-react/src
+            -Dsonar.javascript.lcov.reportPaths=frontend-react/coverage/lcov.info
