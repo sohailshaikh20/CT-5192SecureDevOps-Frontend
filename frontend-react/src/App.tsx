@@ -6,6 +6,12 @@ import Register from './components/Register';
 import  StudentList  from './components/TeacherDashboard';
 import StudentGrades from './components/StudentDashboard';
 
+// -----------------------SECURITY TEST VULNERABILITY ----------------
+// vulnerability 1: hardcoded secret / API key
+// hardcoding secrets in frontend code is not secure because anyone can view it in their browser.
+const HARDCODED_API_KEY = "SECRET-API-KEY-12345";
+// ----------------------------------------------------------------------
+
 interface User {
   id: number;
   username: string;
@@ -111,7 +117,12 @@ const App: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // -------------------- SECURITY TEST VULNERABILITY -----------
+        // vulnerability 2: sensitive token stored in localStorage and logged
+        // localStorage is accessible by JavaScript and can be stolen via XSS attacks.
         localStorage.setItem('token', data.token);
+        console.log("User authentication token:", data.token);
+        // ---------------------------------------------------------------------------------
         const userData = JSON.parse(atob(data.token.split('.')[1]));
         setUser(userData);
         setCurrentView('dashboard');
@@ -181,7 +192,14 @@ const App: React.FC = () => {
             <h3 className="text-xl font-bold mb-2">{course.title}</h3>
             
             {/* Course Description */}
-            <p className="mb-3 flex-grow">{course.description}</p>
+            {/* <p className="mb-3 flex-grow">{course.description}</p> */}
+            {/* ---------------------- SECURITY TEST VULNERABILITY ---------------- */}
+            {/* Vulnerability 3: unsafe HTML rendering using dangerouslySetInnerHTML this leads to Cross-Site Scripting (XSS) if user input is not sanitized. */}
+            <p
+              className="mb-3 flex-grow"
+              dangerouslySetInnerHTML={{ __html: course.description }}
+            ></p>
+            {/* -------------------------------------------------------------- */}
             
             {/* Teacher Info */}
             {user?.role === 'student' && course.teacher_name && (
