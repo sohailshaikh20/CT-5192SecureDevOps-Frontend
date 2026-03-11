@@ -385,6 +385,12 @@ const App: React.FC = () => {
   }
   return (
     <div className="min-h-screen bg-gray-100">
+    {/* ---------------- SECURITY TEST VULNERABILITY FOR ZAP ---------------- */}
+    {/* TODO: Remove before production */}
+    {/* Database password: admin123 */}
+    {/* API Key: SUPER_SECRET_API_KEY_123 */}
+    {/* Internal admin endpoint: /admin/deleteAllUsers */}
+    {/* ---------------------------------------------------------------------- */}
       {user && (
         <nav className="bg-white shadow-md p-4 mb-4">
           <div className="container mx-auto flex justify-between items-center">
